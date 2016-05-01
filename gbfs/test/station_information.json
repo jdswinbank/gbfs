@@ -1,0 +1,36 @@
+{
+    "data": {
+        "stations": [
+            {
+                "capacity": 10,
+                "eightd_has_key_dispenser": false,
+                "lat": 12.34567,
+                "lon": -76.54321,
+                "name": "First Test Station",
+                "region_id": 1,
+                "rental_methods": [
+                    "KEY",
+                    "CREDITCARD"
+                ],
+                "short_name": "Station 1",
+                "station_id": "0"
+            },
+            {
+                "capacity": 11,
+                "eightd_has_key_dispenser": false,
+                "lat": 23.45678,
+                "lon": -87.65432,
+                "name": "Second Test Station",
+                "region_id": 1,
+                "rental_methods": [
+                    "KEY",
+                    "CREDITCARD"
+                ],
+                "short_name": "Station 2",
+                "station_id": "1"
+            }
+        ]
+    },
+    "last_updated": 1462056459,
+    "ttl": 10
+}
