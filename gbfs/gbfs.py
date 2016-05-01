@@ -58,8 +58,8 @@ class StationCollection(object):
 
 class Station(object):
     def __init__(self, station_id, name, lon, lat, **kwargs):
-        self.station_id = station_id
-        self.name = name
+        self.station_id = str(station_id)
+        self.name = str(name)
         self.position = Position(math.radians(lon), math.radians(lat))
 
     def __repr__(self):
