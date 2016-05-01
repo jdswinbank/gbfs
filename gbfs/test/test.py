@@ -63,8 +63,14 @@ class StationCollectionTest(unittest.TestCase):
         self.assertFalse(self.station_collection.valid)
 
 class StationTest(unittest.TestCase):
+    def setUp(self):
+        self.s = gbfs.Station("id", "name", 1.1, 2.2)
+
     def test_ctor(self):
-        s = gbfs.Station("id", "name", 1.1, 2.2)
-        self.assertEqual(s.station_id, "id")
-        self.assertEqual(s.name, "name")
-        self.assertEqual(s.position, gbfs.Position(1.1, 2.2))
+        self.assertEqual(self.s.station_id, "id")
+        self.assertEqual(self.s.name, "name")
+        self.assertEqual(self.s.position, gbfs.Position(1.1, 2.2))
+
+    def test_repr(self):
+        self.assertEqual(str(self.s), "Station('id', 'name')")
+        self.assertEqual(repr(self.s), "Station('id', 'name')")
