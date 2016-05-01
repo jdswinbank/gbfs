@@ -82,6 +82,18 @@ class StationCollection(object):
         """
         return (time.time() - self.last_updated) <= self.ttl
 
+    def get_id(self, station_id):
+        """
+        Return a station with ID ``station_id``, or ``None``.
+        """
+        # Probably StationCollection should actually be a mapping of
+        # station_id -> station. But it's not at the moment.
+        for station in self.stations:
+            if station.station_id == station_id:
+                return station
+        return None
+
+
 class Station(object):
     # Optional fields in the GBFS spec, provided as pairs of (field_name,
     # callable), where callable is used to cast whatever input is provided to

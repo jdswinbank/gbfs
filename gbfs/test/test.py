@@ -62,6 +62,10 @@ class StationCollectionTest(unittest.TestCase):
         self.station_collection.last_updated -= self.station_collection.ttl
         self.assertFalse(self.station_collection.valid)
 
+    def test_get_id(self):
+        self.assertEqual(self.station_collection.get_id("0").station_id, "0")
+        self.assertEqual(self.station_collection.get_id("1").station_id, "1")
+
 class StationTest(unittest.TestCase):
     def setUp(self):
         self.s = gbfs.Station("id", "name", 1.1, 2.2)
