@@ -11,16 +11,16 @@ class PositionTest(unittest.TestCase):
         point1 = point2 = gbfs.Position(1, 1)
         self.assertEqual(gbfs.haversine(point1, point2), 0)
 
-        point3 = gbfs.Position(point1.lon + 2 * math.pi, point1.lat)
+        point3 = gbfs.Position(point1.lon + 360, point1.lat)
         self.assertAlmostEqual(gbfs.haversine(point1, point3), 0)
 
 
     def test_earth_circumference(self):
         point1 = gbfs.Position(0, 0)
-        point2 = gbfs.Position(math.pi, 0)
+        point2 = gbfs.Position(180, 0)
         self.assertEqual(gbfs.haversine(point1, point2), math.pi * 6371)
 
-        point3 = gbfs.Position(0, math.pi / 2)
+        point3 = gbfs.Position(0, 90)
         self.assertAlmostEqual(gbfs.haversine(point1, point3),
                                math.pi * 6371 / 2)
 
@@ -61,3 +61,10 @@ class StationCollectionTest(unittest.TestCase):
         self.assertTrue(self.station_collection.valid)
         self.station_collection.last_updated -= self.station_collection.ttl
         self.assertFalse(self.station_collection.valid)
+
+class StationTest(unittest.TestCase):
+    def test_ctor(self):
+        s = gbfs.Station("id", "name", 1.1, 2.2)
+        self.assertEqual(s.station_id, "id")
+        self.assertEqual(s.name, "name")
+        self.assertEqual(s.position, gbfs.Position(1.1, 2.2))

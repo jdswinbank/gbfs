@@ -12,17 +12,17 @@ __all__ = ["Position", "haversine", "EARTH_RADIUS", "StationCollection",
 
 EARTH_RADIUS = 6371.0 # km
 
-# Angles measured in radians
+# Angles measured in degrees
 Position = namedtuple('Position', ['lon', 'lat'])
 
 def haversine(pos1, pos2):
     # https://en.wikipedia.org/wiki/Haversine_formula
-    delta_lat = pos2.lat - pos1.lat
-    delta_lon = pos2.lon - pos1.lon
+    delta_lat = math.radians(pos2.lat - pos1.lat)
+    delta_lon = math.radians(pos2.lon - pos1.lon)
 
     return EARTH_RADIUS * 2 * math.asin(math.sqrt(math.sin(delta_lat/2)**2
-                                                  + math.cos(pos1.lat)
-                                                  * math.cos(pos2.lat)
+                                                  + math.cos(math.radians(pos1.lat))
+                                                  * math.cos(math.radians(pos2.lat))
                                                   * math.sin(delta_lon/2)**2))
 
 class StationCollection(object):
@@ -70,7 +70,7 @@ class Station(object):
     def __init__(self, station_id, name, lon, lat, **kwargs):
         self.station_id = str(station_id)
         self.name = str(name)
-        self.position = Position(math.radians(lon), math.radians(lat))
+        self.position = Position(float(lon), float(lat))
 
     def __repr__(self):
         return 'Station(%r, %r)' % (self.station_id, self.name)
