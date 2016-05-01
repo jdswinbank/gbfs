@@ -6,7 +6,7 @@ import time
 
 import gbfs
 
-class PositionTests(unittest.TestCase):
+class PositionTest(unittest.TestCase):
     def test_zero_distance(self):
         point1 = point2 = gbfs.Position(1, 1)
         self.assertEqual(gbfs.haversine(point1, point2), 0)
@@ -24,7 +24,7 @@ class PositionTests(unittest.TestCase):
         self.assertAlmostEqual(gbfs.haversine(point1, point3),
                                math.pi * 6371 / 2)
 
-class StationCollectionTests(unittest.TestCase):
+class StationCollectionTest(unittest.TestCase):
     def setUp(self):
         self.stations = [gbfs.Station("0", "First Station", 1.1, 2.2),
                          gbfs.Station("1", "Second Station", 3.3, 4.4)]
@@ -56,3 +56,8 @@ class StationCollectionTests(unittest.TestCase):
             j = json.load(f)
         stations = gbfs.StationCollection.from_json(j)
         self.assertEqual(len(stations), 2)
+
+    def test_validity(self):
+        self.assertTrue(self.station_collection.valid)
+        self.station_collection.last_updated -= self.station_collection.ttl
+        self.assertFalse(self.station_collection.valid)

@@ -59,6 +59,13 @@ class StationCollection(object):
         stations = [Station(**data) for data in json['data']['stations']]
         return StationCollection(ttl, last_updated, stations)
 
+    @property
+    def valid(self):
+        """
+        Return True if the ``last_updated`` time is more recent than the TTL.
+        """
+        return (time.time() - self.last_updated) <= self.ttl
+
 class Station(object):
     def __init__(self, station_id, name, lon, lat, **kwargs):
         self.station_id = str(station_id)
