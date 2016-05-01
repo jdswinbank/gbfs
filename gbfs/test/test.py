@@ -74,3 +74,31 @@ class StationTest(unittest.TestCase):
     def test_repr(self):
         self.assertEqual(str(self.s), "Station('id', 'name')")
         self.assertEqual(repr(self.s), "Station('id', 'name')")
+
+    def test_optional_missing(self):
+        for field_name, field_type in gbfs.Station.OPTIONAL_FIELDS:
+            self.assertIsNone(getattr(self.s, field_name))
+
+    def test_rental_method(self):
+        methods = ["KEY", "CREDITCARD", "PAYPASS", "APPLEPAY", "ANDROIDPAY",
+                   "TRANSITCARD", "ACCOUNTNUMBER", "PHONE"]
+
+        # Check we can set each method individually:
+        for method in methods:
+            s = gbfs.Station("id", "name", 1.1, 2.2, rental_methods=[method])
+            self.assertIn(getattr(gbfs.RentalMethod, method), s.rental_methods)
+
+        # ... or all of them at once:
+        s = gbfs.Station("id", "name", 1.1, 2.2, rental_methods=methods)
+        self.assertEqual(len(s.rental_methods), len(methods))
+        for method in methods:
+            self.assertIn(getattr(gbfs.RentalMethod, method), s.rental_methods)
+
+    def test_numeric_capacity(self):
+        s = gbfs.Station("id", "name", 1.1, 2.2, capacity="1")
+        self.assertEqual(s.capacity, 1)
+
+    def test_extra(self):
+        self.assertFalse(hasattr(self.s, "dummy_field"))
+        s = gbfs.Station("id", "name", 1.1, 2.2, dummy_field="dummy")
+        self.assertEqual(s.dummy_field, "dummy")

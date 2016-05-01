@@ -8,9 +8,25 @@ from collections import namedtuple
 #import requests
 
 __all__ = ["Position", "haversine", "EARTH_RADIUS", "StationCollection",
-           "Station"]
+           "Station", "RentalMethod"]
 
 EARTH_RADIUS = 6371.0 # km
+
+class RentalMethod(enum.Enum):
+    """
+    All possible rental methods in standard as of 2016-05-01.
+    """
+    # This may be gratuitous: additional methods can be added in future, so
+    # locking down the enumeration will just cause breakage. Useful for
+    # sanity checking for now, though.
+    KEY = 0
+    CREDITCARD = 1
+    PAYPASS = 2
+    APPLEPAY = 3
+    ANDROIDPAY = 4
+    TRANSITCARD = 5
+    ACCOUNTNUMBER = 6
+    PHONE = 7
 
 # Angles measured in degrees
 Position = namedtuple('Position', ['lon', 'lat'])
@@ -67,10 +83,36 @@ class StationCollection(object):
         return (time.time() - self.last_updated) <= self.ttl
 
 class Station(object):
+    # Optional fields in the GBFS spec, provided as pairs of (field_name,
+    # callable), where callable is used to cast whatever input is provided to
+    # an appropriate type.
+    OPTIONAL_FIELDS = [("short_name", str),
+                       ("address", str),
+                       ("cross_street", str),
+                       ("region_id", str),
+                       ("post_code", str),
+                       ("rental_methods", lambda x: {getattr(RentalMethod, y)
+                                                     for y in x}),
+                       ("capacity", int)]
+
     def __init__(self, station_id, name, lon, lat, **kwargs):
         self.station_id = str(station_id)
         self.name = str(name)
         self.position = Position(float(lon), float(lat))
+
+        # All optional fields (ie, as defined in the spec) are set to None if
+        # they don't exist.
+        for field_name, field_type in self.OPTIONAL_FIELDS:
+            try:
+                value = field_type(kwargs.pop(field_name))
+            except KeyError:
+                value = None
+            setattr(self, field_name, value)
+
+        # Fields which aren't defined in the spec are also saved; this is
+        # relevant for e.g. Citibike's eightd_has_key_dispenser.
+        for field, value in kwargs.items():
+            setattr(self, field, value)
 
     def __repr__(self):
         return 'Station(%r, %r)' % (self.station_id, self.name)
