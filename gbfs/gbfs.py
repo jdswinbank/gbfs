@@ -26,10 +26,10 @@ def haversine(pos1, pos2):
                                                   * math.sin(delta_lon/2)**2))
 
 class StationCollection(object):
-    def __init__(self, json):
-        self.ttl = int(json['ttl'])
-        self.last_updated = int(json['last_updated'])
-        self.stations = [Station(**data) for data in json['data']['stations']]
+    def __init__(self, ttl, last_updated, stations):
+        self.ttl = ttl
+        self.last_updated = last_updated
+        self.stations = list(stations)
 
     def __getitem__(self, *args, **kwargs):
         return self.stations.__getitem__(*args, **kwargs)
@@ -48,6 +48,13 @@ class StationCollection(object):
                 for station in self
                 if radius is None
                 or haversine(position, station.position) <= radius]
+
+    @staticmethod
+    def from_json(json):
+        ttl = int(json['ttl'])
+        last_updated = int(json['last_updated'])
+        stations = [Station(**data) for data in json['data']['stations']]
+        return StationCollection(ttl, last_updated, stations)
 
 class Station(object):
     def __init__(self, station_id, name, lon, lat, **kwargs):

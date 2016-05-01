@@ -28,7 +28,7 @@ class StationCollectionTests(unittest.TestCase):
         with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                "station_information.json"), "r") as f:
             self.json = json.load(f)
-        self.stations = gbfs.StationCollection(self.json)
+        self.stations = gbfs.StationCollection.from_json(self.json)
 
     def test_length(self):
         self.assertEqual(len(self.stations),
