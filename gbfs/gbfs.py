@@ -51,6 +51,9 @@ class StationCollection(object):
 
     @staticmethod
     def from_json(json):
+        """
+        Parse GBFS-style JSON and return a StationCollecton.
+        """
         ttl = int(json['ttl'])
         last_updated = int(json['last_updated'])
         stations = [Station(**data) for data in json['data']['stations']]
