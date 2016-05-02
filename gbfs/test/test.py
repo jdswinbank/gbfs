@@ -118,6 +118,15 @@ class StationTest(unittest.TestCase):
         self.assertFalse(self.s.is_renting)
         self.assertFalse(self.s.is_returning)
 
+    def test_push_status(self):
+        self.s.push_status("1", "2", "True", "True", "True", "3")
+        self.assertEqual(self.s.num_bikes_available, 1)
+        self.assertEqual(self.s.num_docks_available, 2)
+        self.assertEqual(self.s.last_reported, 3)
+        self.assertTrue(self.s.is_installed)
+        self.assertTrue(self.s.is_renting)
+        self.assertTrue(self.s.is_returning)
+
     def test_age(self):
         self.s.last_reported = 0
         self.assertGreater(self.s.age, 0)

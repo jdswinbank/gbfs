@@ -66,14 +66,17 @@ class StationCollection(object):
                 or haversine(position, station.position) <= radius]
 
     @staticmethod
-    def from_json(json):
+    def from_json(info, status=None):
         """
         Parse GBFS-style JSON and return a StationCollecton.
         """
-        ttl = int(json['ttl'])
-        last_updated = int(json['last_updated'])
-        stations = [Station(**data) for data in json['data']['stations']]
-        return StationCollection(ttl, last_updated, stations)
+        ttl = int(info['ttl'])
+        last_updated = int(info['last_updated'])
+        stations = [Station(**data) for data in info['data']['stations']]
+        collection = StationCollection(ttl, last_updated, stations)
+        if status:
+            collection.update_status()
+        return collection
 
     @property
     def valid(self):
@@ -128,17 +131,20 @@ class Station(object):
 
         # Initialize the station so that relevant attributes are set even if
         # the status hasn't yet been retrieved.
-        self.set_status(-1, -1, False, False, False, -1)
+        self.status = {}
+        self.push_status(-1, -1, False, False, False, -1)
 
-    def set_status(self, num_bikes_available, num_docks_available,
+    def push_status(self, num_bikes_available, num_docks_available,
                    is_installed, is_renting, is_returning, last_reported,
                    **kwargs):
-        self.num_bikes_available = int(num_bikes_available)
-        self.num_docks_available = int(num_docks_available)
-        self.is_installed = bool(is_installed)
-        self.is_renting = bool(is_installed)
-        self.is_returning = bool(is_installed)
         self.last_reported = int(last_reported)
+        self.status[self.last_reported] = {
+            "num_bikes_available": int(num_bikes_available),
+            "num_docks_available": int(num_docks_available),
+            "is_installed": bool(is_installed),
+            "is_renting": bool(is_installed),
+            "is_returning": bool(is_installed),
+        }
 
     @property
     def age(self):
@@ -151,6 +157,12 @@ class Station(object):
             return time.time() - self.last_reported
         else:
             return -1
+
+    def __getattr__(self, attrname):
+        try:
+            return self.status[self.last_reported][attrname]
+        except KeyError:
+            raise AttributeError(attrname)
 
     def __repr__(self):
         return 'Station(%r, %r)' % (self.station_id, self.name)
