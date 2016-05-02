@@ -24,6 +24,7 @@ class PositionTest(unittest.TestCase):
         self.assertAlmostEqual(gbfs.haversine(point1, point3),
                                math.pi * 6371 / 2)
 
+
 class StationCollectionTest(unittest.TestCase):
     def setUp(self):
         self.stations = [gbfs.Station("0", "First Station", 1.1, 2.2),
@@ -66,6 +67,7 @@ class StationCollectionTest(unittest.TestCase):
         self.assertEqual(self.station_collection.get_id("0").station_id, "0")
         self.assertEqual(self.station_collection.get_id("1").station_id, "1")
 
+
 class StationTest(unittest.TestCase):
     def setUp(self):
         self.s = gbfs.Station("id", "name", 1.1, 2.2)
@@ -106,3 +108,17 @@ class StationTest(unittest.TestCase):
         self.assertFalse(hasattr(self.s, "dummy_field"))
         s = gbfs.Station("id", "name", 1.1, 2.2, dummy_field="dummy")
         self.assertEqual(s.dummy_field, "dummy")
+
+    def test_empty_status(self):
+        self.assertEqual(self.s.num_bikes_available, -1)
+        self.assertEqual(self.s.num_docks_available, -1)
+        self.assertEqual(self.s.last_reported, -1)
+        self.assertEqual(self.s.age, -1)
+        self.assertFalse(self.s.is_installed)
+        self.assertFalse(self.s.is_renting)
+        self.assertFalse(self.s.is_returning)
+
+    def test_age(self):
+        self.s.last_reported = 0
+        self.assertGreater(self.s.age, 0)
+        self.assertLessEqual(self.s.age, time.time())
